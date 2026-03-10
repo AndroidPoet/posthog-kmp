@@ -1,0 +1,35 @@
+<svg width="1200" height="400" viewBox="0 0 1200 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="400" fill="white"/>
+  
+  <!-- Subtle Gradient Accent (Optional but adds depth) -->
+  <defs>
+    <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1D4AFF;stop-opacity:0.05" />
+      <stop offset="100%" style="stop-color:#1D4AFF;stop-opacity:0" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="400" fill="url(#blueGradient)"/>
+
+  <!-- Hedgehog Silhouette (Stylized) -->
+  <g transform="translate(150, 100) scale(1.5)">
+    <!-- Quills/Spikes -->
+    <path d="M50 0 L65 30 L95 20 L85 50 L115 60 L85 70 L95 100 L65 90 L50 120 L35 90 L5 100 L15 70 L-15 60 L15 50 L5 20 L35 30 Z" fill="#F9BD2B"/>
+    <!-- Body -->
+    <circle cx="50" cy="65" r="35" fill="#1D4AFF"/>
+    <!-- Nose -->
+    <circle cx="95" cy="65" r="6" fill="#1D4AFF"/>
+    <!-- Eye (White) -->
+    <circle cx="70" cy="55" r="4" fill="white"/>
+  </g>
+
+  <!-- Text: PostHog KMP -->
+  <text x="450" y="210" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-weight="800" font-size="96" fill="#1D4AFF">PostHog</text>
+  <text x="860" y="210" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-weight="400" font-size="96" fill="#F9BD2B">KMP</text>
+
+  <!-- Tagline or Details (Optional but looks professional) -->
+  <text x="455" y="260" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-weight="500" font-size="24" fill="#6B7280" letter-spacing="0.1em">MULTI-PLATFORM ANALYTICS FOR KOTLIN</text>
+
+  <!-- Decorative Accent Line -->
+  <rect x="450" y="280" width="100" height="6" rx="3" fill="#F9BD2B"/>
+</svg>
