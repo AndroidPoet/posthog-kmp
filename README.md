@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="art/logo.png" width="720" alt="PostHog KMP Logo">
+  <img src="art/banner.svg" width="720" alt="PostHog KMP Logo">
 </p>
 
 <p align="center">
