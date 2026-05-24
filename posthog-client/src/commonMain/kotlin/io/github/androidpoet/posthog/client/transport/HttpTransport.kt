@@ -19,7 +19,7 @@ import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-private const val CLIENT_VERSION = "posthog-kmp/0.1.1"
+private const val CLIENT_VERSION = "posthog-kmp/0.1.2"
 
 /**
  * Low-level HTTP transport layer for PostHog API communication.
