@@ -17,6 +17,7 @@ Kotlin Multiplatform SDK for [PostHog](https://posthog.com) — type-safe analyt
 ## Features
 
 - **Type-safe Result monad** — `PostHogResult<T>` with `map`, `flatMap`, `recover` — no exceptions leak to callers
+- **Optional Kotlin Result bridge** — use `toKotlinResult()` / `toPostHogResult()` when you prefer stdlib `Result`
 - **Value class IDs** — `DistinctId`, `ApiKey`, `FeatureFlagKey`, `GroupType`, `GroupKey` prevent mixups at compile time
 - **Properties DSL** — Build event properties with a clean Kotlin DSL instead of raw JSON
 - **Event capture with automatic batching** — Queue events in memory, flush at threshold or on interval

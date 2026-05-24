@@ -1,5 +1,7 @@
 package io.github.androidpoet.posthog.core.result
 
+import kotlinx.coroutines.CancellationException
+
 /**
  * A discriminated result type for PostHog operations.
  *
@@ -43,7 +45,8 @@ public sealed interface PostHogResult<out T> {
                 Success(block())
             } catch (e: PostHogException) {
                 Failure(e.error)
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
+                if (e is CancellationException) throw e
                 Failure(PostHogError(message = e.message ?: "Unknown error"))
             }
     }
@@ -109,3 +112,21 @@ public inline fun <T> PostHogResult<T>.getOrElse(
     is PostHogResult.Success -> value
     is PostHogResult.Failure -> defaultValue(error)
 }
+
+public fun <T> PostHogResult<T>.toKotlinResult(): Result<T> = when (this) {
+    is PostHogResult.Success -> Result.success(value)
+    is PostHogResult.Failure -> Result.failure(error.toException())
+}
+
+public inline fun <T> Result<T>.toPostHogResult(
+    mapThrowable: (Throwable) -> PostHogError = { throwable ->
+        val postHogException = throwable as? PostHogException
+        postHogException?.error ?: PostHogError(message = throwable.message ?: "Unknown error")
+    },
+): PostHogResult<T> = fold(
+    onSuccess = { PostHogResult.Success(it) },
+    onFailure = { throwable ->
+        if (throwable is CancellationException) throw throwable
+        PostHogResult.Failure(mapThrowable(throwable))
+    },
+)

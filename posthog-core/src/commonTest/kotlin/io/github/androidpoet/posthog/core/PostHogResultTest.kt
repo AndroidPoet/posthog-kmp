@@ -9,6 +9,9 @@ import io.github.androidpoet.posthog.core.result.map
 import io.github.androidpoet.posthog.core.result.onFailure
 import io.github.androidpoet.posthog.core.result.onSuccess
 import io.github.androidpoet.posthog.core.result.recover
+import io.github.androidpoet.posthog.core.result.toKotlinResult
+import io.github.androidpoet.posthog.core.result.toPostHogResult
+import kotlinx.coroutines.CancellationException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -169,5 +172,63 @@ class PostHogResultTest {
 
         assertTrue(result.isFailure)
         assertEquals("boom", result.errorOrNull()?.message)
+    }
+
+    @Test
+    fun test_catching_rethrowsCancellationException() {
+        assertFailsWith<CancellationException> {
+            PostHogResult.catching<Int> {
+                throw CancellationException("cancelled")
+            }
+        }
+    }
+
+    @Test
+    fun test_toKotlinResult_successMapsToResultSuccess() {
+        val kotlinResult = PostHogResult.Success(42).toKotlinResult()
+
+        assertTrue(kotlinResult.isSuccess)
+        assertEquals(42, kotlinResult.getOrNull())
+    }
+
+    @Test
+    fun test_toKotlinResult_failureMapsToResultFailure() {
+        val kotlinResult = PostHogResult.Failure(error).toKotlinResult()
+
+        assertTrue(kotlinResult.isFailure)
+        val exception = kotlinResult.exceptionOrNull()
+        assertIs<PostHogException>(exception)
+        assertEquals(error, exception.error)
+    }
+
+    @Test
+    fun test_toPostHogResult_successMapsToPostHogSuccess() {
+        val postHogResult = Result.success(7).toPostHogResult()
+
+        assertTrue(postHogResult.isSuccess)
+        assertEquals(7, postHogResult.getOrNull())
+    }
+
+    @Test
+    fun test_toPostHogResult_failureMapsToPostHogFailure() {
+        val postHogResult = Result.failure<Int>(IllegalStateException("boom")).toPostHogResult()
+
+        assertTrue(postHogResult.isFailure)
+        assertEquals("boom", postHogResult.errorOrNull()?.message)
+    }
+
+    @Test
+    fun test_toPostHogResult_failureWithPostHogExceptionUnwrapsError() {
+        val postHogResult = Result.failure<Int>(PostHogException(error)).toPostHogResult()
+
+        assertTrue(postHogResult.isFailure)
+        assertEquals(error, postHogResult.errorOrNull())
+    }
+
+    @Test
+    fun test_toPostHogResult_rethrowsCancellationException() {
+        assertFailsWith<CancellationException> {
+            Result.failure<Int>(CancellationException("cancelled")).toPostHogResult()
+        }
     }
 }
