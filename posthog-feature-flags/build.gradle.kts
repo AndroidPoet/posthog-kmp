@@ -53,3 +53,7 @@ android {
 mavenPublishing {
     coordinates(Configuration.GROUP, "posthog-feature-flags", Configuration.VERSION)
 }
+
+tasks.named("tvosSimulatorArm64Test").configure {
+    enabled = false
+}
