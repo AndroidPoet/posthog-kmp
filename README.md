@@ -27,14 +27,13 @@ Kotlin Multiplatform SDK for [PostHog](https://posthog.com) — type-safe analyt
 - **Super properties** — Register properties that are merged into every subsequent event
 - **Opt in/out** — Disable all capture with a single call, GDPR-friendly
 - **15 platform targets** — Android, iOS, macOS, tvOS, watchOS, JVM, Linux, Windows, and WasmJs
-- **Manual wiring** — No runtime DI container required
+- **Simple setup** — Factory-based client creation
 
 ## Setup
 
 Add the dependencies you need to your `build.gradle.kts`:
 
 ```kotlin
-// Version catalog (gradle/libs.versions.toml)
 [versions]
 posthog-kmp = "0.1.1"
 
@@ -45,7 +44,6 @@ posthog-feature-flags = { module = "io.github.androidpoet:posthog-feature-flags"
 ```
 
 ```kotlin
-// build.gradle.kts
 kotlin {
     sourceSets {
         commonMain.dependencies {
@@ -61,7 +59,6 @@ kotlin {
 ### Create a Client
 
 ```kotlin
-// Direct instantiation
 val client = PostHog.create("phc_your_project_api_key") {
     host = "https://us.i.posthog.com"  // or "https://eu.i.posthog.com"
     flushAt = 20
@@ -77,10 +74,8 @@ val flags = createFeatureFlagsClient(client)
 ### Capture Events
 
 ```kotlin
-// Simple event
 client.capture("page_viewed")
 
-// With properties DSL
 client.capture("button_clicked") {
     "screen" to "home"
     "button_id" to "cta_main"
@@ -107,24 +102,19 @@ client.identify(
 ```kotlin
 val flags = createFeatureFlagsClient(client)
 
-// Load flags from server
 flags.loadFlags(distinctId = "user_123")
 
-// Boolean check
 if (flags.isFeatureEnabled("new-dashboard")) {
     showNewDashboard()
 }
 
-// Multivariate string value
 val variant = flags.getStringFlag("onboarding-flow", defaultValue = "control")
 
-// Typed JSON payload
 @Serializable
 data class DiscountConfig(val percent: Int, val code: String)
 
 val discount = flags.getTypedPayload<DiscountConfig>("summer-sale")
 
-// Observe flag changes reactively
 flags.flagsFlow.collect { allFlags ->
     val enabled = allFlags.filter { it.value.isEnabled }
     println("Enabled flags: ${enabled.keys}")
@@ -148,13 +138,10 @@ client.group(
 ### Batch Flush
 
 ```kotlin
-// Flush all queued events immediately
 client.flush()
 
-// Reset client (new distinct ID, clear queue and super properties)
 client.reset()
 
-// Clean up when done
 client.close()
 ```
 
@@ -210,7 +197,6 @@ client.close()
 | **Error handling** | `PostHogResult<T>` monad | Thrown exceptions |
 | **Type safety** | Value class IDs | String IDs |
 | **Feature flags** | Cached + `StateFlow` | Cached |
-| **DI** | Manual wiring | Manual |
 | **Properties** | Kotlin DSL | Map builders |
 | **Dependencies** | 3 core | Platform-specific |
 | **Codebase** | ~2K LOC | ~15K LOC |
