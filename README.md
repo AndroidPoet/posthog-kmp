@@ -6,7 +6,7 @@
   <img src="https://img.shields.io/badge/Kotlin-2.1.10-blue.svg?logo=kotlin" alt="Kotlin">
   <img src="https://img.shields.io/badge/Ktor-3.1.1-blue.svg" alt="Ktor">
   <img src="https://img.shields.io/badge/Platform-Android%20%7C%20iOS%20%7C%20macOS%20%7C%20tvOS%20%7C%20watchOS%20%7C%20JVM%20%7C%20Linux%20%7C%20Windows%20%7C%20WasmJs-green.svg" alt="Platforms">
-  <img src="https://img.shields.io/badge/Maven%20Central-0.1.0-blue.svg" alt="Maven Central">
+  <img src="https://img.shields.io/badge/Maven%20Central-0.1.1-blue.svg" alt="Maven Central">
   <img src="https://img.shields.io/badge/License-MIT-orange.svg" alt="License">
 </p>
 
@@ -27,7 +27,7 @@ Kotlin Multiplatform SDK for [PostHog](https://posthog.com) — type-safe analyt
 - **Super properties** — Register properties that are merged into every subsequent event
 - **Opt in/out** — Disable all capture with a single call, GDPR-friendly
 - **15 platform targets** — Android, iOS, macOS, tvOS, watchOS, JVM, Linux, Windows, and WasmJs
-- **Koin DI** — First-class dependency injection modules for every component
+- **Manual wiring** — No runtime DI container required
 
 ## Setup
 
@@ -36,7 +36,7 @@ Add the dependencies you need to your `build.gradle.kts`:
 ```kotlin
 // Version catalog (gradle/libs.versions.toml)
 [versions]
-posthog-kmp = "0.1.0"
+posthog-kmp = "0.1.1"
 
 [libraries]
 posthog-core = { module = "io.github.androidpoet:posthog-core", version.ref = "posthog-kmp" }
@@ -70,15 +70,8 @@ val client = PostHog.create("phc_your_project_api_key") {
     preloadFeatureFlags = true
 }
 
-// Or with Koin DI
-startKoin {
-    modules(
-        postHogModule("phc_your_project_api_key", config),
-        featureFlagsModule,
-    )
-}
-val client: PostHogClient by inject()
-val flags: FeatureFlagsClient by inject()
+val client = createPostHogClient("phc_your_project_api_key", config)
+val flags = createFeatureFlagsClient(client)
 ```
 
 ### Capture Events
@@ -112,7 +105,7 @@ client.identify(
 ### Feature Flags
 
 ```kotlin
-val flags: FeatureFlagsClient by inject()
+val flags = createFeatureFlagsClient(client)
 
 // Load flags from server
 flags.loadFlags(distinctId = "user_123")
@@ -179,7 +172,7 @@ client.close()
 │  Cache       │  Event Queue     │  Value IDs             │
 │  StateFlow   │  Batch Flush     │  Models                │
 │  Typed       │  Super Props     │  Serialization         │
-│  Payloads    │  Koin Module     │  Error Types           │
+│  Payloads    │  Factory API     │  Error Types           │
 │              ├──────────────────┤                        │
 │              │  Ktor Engines    │                        │
 │              │  OkHttp · Darwin │                        │
@@ -192,7 +185,7 @@ client.close()
 | Module | Artifact | Description |
 |--------|----------|-------------|
 | **posthog-core** | `io.github.androidpoet:posthog-core` | Result monad, error types, value class IDs, event/flag models |
-| **posthog-client** | `io.github.androidpoet:posthog-client` | HTTP transport, event capture, batching, identify, groups, Koin DI |
+| **posthog-client** | `io.github.androidpoet:posthog-client` | HTTP transport, event capture, batching, identify, groups |
 | **posthog-feature-flags** | `io.github.androidpoet:posthog-feature-flags` | Feature flag evaluation, caching, StateFlow observation, typed payloads |
 
 ## Targets
@@ -217,7 +210,7 @@ client.close()
 | **Error handling** | `PostHogResult<T>` monad | Thrown exceptions |
 | **Type safety** | Value class IDs | String IDs |
 | **Feature flags** | Cached + `StateFlow` | Cached |
-| **DI** | Koin modules | Manual |
+| **DI** | Manual wiring | Manual |
 | **Properties** | Kotlin DSL | Map builders |
 | **Dependencies** | 3 core | Platform-specific |
 | **Codebase** | ~2K LOC | ~15K LOC |
